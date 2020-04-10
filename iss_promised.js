@@ -9,4 +9,19 @@ const fetchCoordsByIP = function(body) {
   return request(`https://ipvigilante.com/${JSON.parse(body).ip}`);
 };
 
-module.exports = { fetchMyIP, fetchCoordsByIP };
+const fetchISSFlyOverTimes = function (coords) {
+  const parsedBody = JSON.parse(coords);
+  return request(`http://api.open-notify.org/iss-pass.json?lat=${parsedBody.data.latitude}&lon=${parsedBody.data.longitude}`);
+}
+
+const nextISSTimesForMyLocation = function () {
+  return fetchMyIP()
+  .then(fetchCoordsByIP)
+  .then(fetchISSFlyOverTimes)
+  .then(data => {
+    const {response} = JSON.parse(data);
+    return response;
+  });
+}
+
+module.exports = { nextISSTimesForMyLocation };
